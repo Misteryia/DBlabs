@@ -13,7 +13,6 @@ pqxx::connection get_connection() {
 }
 
 int main() {
-    // Инициализация данных
     std::vector<std::string> categories = {"Белый чай", "Зелёный чай", "Жёлтый чай", "Чай улун", "Чёрный чай", "Красный чай", "Чай пуэр"};
     std::vector<std::string> teaForms = {"листовой", "пакетированный", "гранулированный", "прессованный", "порошковый", "цветочный"};
     std::vector<std::string> teaBrands = {"Twinings", "Lipton", "Fortnum & Mason", "Harney & Sons", "Ahmad Tea", "Dilmah", "Taj Mahal", "Aromistico", "Майский чай", "Принцесса Нури", "Greenfield", "TeaGschwendner", "Lupicia", "ITO EN", "Tazo", "Lipton", "Ahmad Tea", "Teavana", "Ten Ren", "Eco-Cha", "Menghai Tea Factory", "Xiaguan", "Yunnan Sourcing", "Celestial Seasonings", "Yogi Tea", "Pukka Herbs", "Mariage Frères", "Wedgwood", "Rare Tea Company"};
@@ -22,7 +21,6 @@ int main() {
     std::vector<std::string> packaging = {"жестяная банка", "картонная коробка", "керамическая банка", "деревянная шкатулка", "тканевый мешочек", "фольгированный пакет", "стеклянная банка"};
     std::vector<std::string> origins = {"Китай", "Индия", "Япония", "Шри-Ланка", "Кения", "Вьетнам", "Тайвань", "Непал", "Россия", "Грузия", "Иран", "Турция"};
 
-    // Генерация годов
     std::vector<std::string> years;
     for (int year = 1930; year <= 2024; ++year) {
         years.push_back(std::to_string(year));
@@ -33,7 +31,6 @@ int main() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(1, 100000000);
 
-    // Подключение к базе данных
     pqxx::connection conn = get_connection();
 
     // Оптимизация 1: Настройка соединения (отключаем синхронный коммит)
@@ -48,7 +45,6 @@ int main() {
         "INSERT INTO Products (name, description, price, stock_quantity, category_id) "
         "VALUES ($1, $2, $3, $4, $5)");
 
-    // Оптимизация 3: Пакетная вставка
     const int batch_size = 25000; // Размер пакета
     
     for (int i = 0; i < 5500000; ++i) {
@@ -78,7 +74,6 @@ int main() {
             
             txn.commit();
             
-            // Вывод прогресса
             if (i % 100000 == 0) {
                 std::cout << "Processed " << i << " records..." << std::endl;
             }
